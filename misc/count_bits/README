@@ -1,0 +1,5 @@
+PROBLEM:
+
+Given an array of 10,000 16-bit integers, count the total number of bits that are set to 1.
+
+Quora article: https://goo.gl/CMVcEP

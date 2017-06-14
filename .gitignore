@@ -1,0 +1,6 @@
+a.out
+*.o
+*.dSYM
+algorithms/sorting/sorting
+data_structures/heap_test
+data_structures/linked_list
