@@ -1,6 +1,8 @@
 // Given an array of 10,000 16-bit integers, count the total number of bits
 // that are set to 1.
 //
+// From Quora article: https://goo.gl/CMVcEP
+//
 // COMPILE WITH:  gcc --std=c99 count_bits.c -o count_bits
 
 #include <stdio.h>

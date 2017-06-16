@@ -1,1 +1,39 @@
-Practice problems, interview questions and code sims. For practice, and fun.
+Practice problems, interview questions and code sims.
+
+I've coded most of these in C, C++, or Ruby.
+
+Sorting Algorithms:
+- bubble sort
+- insertion sort
+- quicksort
+- merge sort
+- heap sort
+- TODO:
+  - counting sort
+  - radix sort
+  - bucket sort
+
+Other Algorithms:
+- find kth largest value in unsorted array (aka "kth order statistic")
+- TODO:
+  - tree traversal (pre/in/post-order)
+  - min-cost path / Djikstra's algorithm
+
+Data Structures:
+- heap
+- linked list
+- TODO:
+  - binary search tree
+  - trie
+
+Dynamic Programming
+- misc problems from www.geeksforgeeks.org
+
+Other Random Problems
+- see misc/ subdir
+- TODO:
+  - print all permutations / combinations of a set of letters / numbers
+
+TO STUDY:
+- dynamic programming problems: knapsack, etc...
+- graph algorithms
