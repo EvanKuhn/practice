@@ -34,6 +34,12 @@ public:
   virtual void sort(std::vector<int>& v);
 };
 
+class SelectionSort : public SortAlgo {
+public:
+  SelectionSort() : SortAlgo("Selection Sort") { }
+  virtual void sort(std::vector<int>& v);
+};
+
 class MergeSort : public SortAlgo {
 public:
   MergeSort() : SortAlgo("Merge Sort") { }

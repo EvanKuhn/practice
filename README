@@ -5,6 +5,7 @@ I've coded most of these in C, C++, or Ruby.
 Sorting Algorithms:
 - bubble sort
 - insertion sort
+- selection sort
 - quicksort
 - merge sort
 - heap sort
@@ -18,6 +19,9 @@ Other Algorithms:
 - TODO:
   - tree traversal (pre/in/post-order)
   - min-cost path / Djikstra's algorithm
+  - m-th to last element in list (PII 41)
+  - list flattening (PII 44) and unflattening (PII 48)
+
 
 Data Structures:
 - heap
@@ -33,6 +37,7 @@ Other Random Problems
 - see misc/ subdir
 - TODO:
   - print all permutations / combinations of a set of letters / numbers
+  - write an elevator class in C++
 
 TO STUDY:
 - dynamic programming problems: knapsack, etc...

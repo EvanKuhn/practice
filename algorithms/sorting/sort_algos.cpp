@@ -23,7 +23,26 @@ void BubbleSort::sort(vector<int>& v) {
 // InsertionSort
 //==============================================================================
 
+// Insertion sort works by maintaining a sorted and unsorted portion of the
+// array. Initially, the unsorted portion is empty, so the first element is
+// added. Afterwards, we consider the next element and swap it toward the front
+// until it is in the proper place. Continue until all elements are sorted.
 void InsertionSort::sort(vector<int>& v) {
+  for(size_t i = 1; i < v.size(); ++i) {
+    for(size_t s = i; s > 0 && v[s] < v[s-1]; --s) {
+      std::swap(v[s], v[s-1]);
+    }
+  }
+}
+
+//==============================================================================
+// SelectionSort
+//==============================================================================
+
+// Selection sort works by: selecting the smallest value in the unsorted portion
+// of the sub-array, swapping it to the end of the sorted portion, and iterating
+// until all elements are sorted.
+void SelectionSort::sort(vector<int>& v) {
   const size_t size = v.size();
   for (size_t start = 0; start < size; start++) {
     // Find the lowest value in range [start,size)
@@ -44,9 +63,9 @@ void InsertionSort::sort(vector<int>& v) {
 // MergeSort
 //==============================================================================
 
+// Basic mergesort algo: split the array in two, sort both halves, then merge
+// the halves back into a sorted whole. Note: merging requires a temp array.
 void MergeSort::sort(vector<int>& v) {
-  // Basic mergesort algo: split the array in two, sort both halves, then merge
-  // the halves back into a sorted whole. Note: merging requires a temp array.
   vector<int> temp(v.size());
   merge_sort(v, temp, 0, v.size());
 }
