@@ -36,13 +36,17 @@ public:
   // Check whether the current value exists in the tree
   bool has(int value) const;
 
-  // Typedef for taking action on nodes in one of the visit* functions
-  typedef void (*node_visit_func_t)(BinaryTree::Node* node);
+  // Typedefs for taking action on nodes in one of the visit* functions
+  typedef void (*node_visit_func_t)(const BinaryTree::Node* node);
+  typedef void (*node_visit_level_func_t)(const BinaryTree::Node* node, int level);
 
   // Visit nodes in order, pre-order, or post-order
   void visit_in_order(node_visit_func_t func) const;
   void visit_pre_order(node_visit_func_t func) const;
   void visit_post_order(node_visit_func_t func) const;
+
+  // Visit nodes level-by-level
+  void visit_by_level(node_visit_level_func_t func) const;
 
   // Depth-first and breadth-first search
   bool depth_first_search(int target) const;

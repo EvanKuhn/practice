@@ -1,6 +1,7 @@
 #include "binary_tree.h"
 #include <stack>
 #include <queue>
+#include <vector>
 #include <iostream>
 
 //==============================================================================
@@ -220,6 +221,26 @@ void BinaryTree::visit_pre_order(node_visit_func_t func) const {
 
 void BinaryTree::visit_post_order(node_visit_func_t func) const {
   _visit(POST_ORDER, m_root, func);
+}
+
+void BinaryTree::visit_by_level(node_visit_level_func_t func) const {
+  if(!m_root) return;
+  std::vector<const Node*> nodes, children;
+  nodes.push_back(m_root);
+
+  for(int level = 1; nodes.size() > 0; ++level) {
+    // Apply the visit-function to each node, and also record their children
+    for(size_t i = 0; i < nodes.size(); ++i) {
+      const Node* cur = nodes[i];
+      func(cur, level);
+      if(cur->left) children.push_back(cur->left);
+      if(cur->right) children.push_back(cur->right);
+    }
+
+    // Use the children as the new set of nodes
+    nodes.swap(children);
+    children.clear();
+  }
 }
 
 bool BinaryTree::depth_first_search(int target) const {
