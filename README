@@ -16,8 +16,8 @@ Sorting Algorithms:
 
 Other Algorithms:
 - find kth largest value in unsorted array (aka "kth order statistic")
+- tree traversal (pre/in/post-order)
 - TODO:
-  - tree traversal (pre/in/post-order)
   - min-cost path / Djikstra's algorithm
   - m-th to last element in list (PII 41)
   - list flattening (PII 44) and unflattening (PII 48)
@@ -26,8 +26,8 @@ Other Algorithms:
 Data Structures:
 - heap
 - linked list
+- binary search tree
 - TODO:
-  - binary search tree
   - trie
 
 Dynamic Programming
