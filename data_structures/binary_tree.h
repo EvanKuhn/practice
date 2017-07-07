@@ -5,7 +5,6 @@
 // Binary search tree implementation
 //==============================================================================
 
-
 class BinaryTree {
 public:
   // Node structure for the tree
