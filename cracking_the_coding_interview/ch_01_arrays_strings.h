@@ -15,14 +15,14 @@ const string CHAPTER_01_QUESTION_01 =
 bool string_has_unique_chars(string str) {
   std::sort(str.begin(), str.end());
   for(size_t i = 1; i < str.size(); ++i) {
-    if(str[i-1] == str[1]) return false;
+    if(str[i-1] == str[i]) return false;
   }
   return true;
 }
 
-void _test_unique(const string& str) {
-  cout << str << ": ";
-  cout << (string_has_unique_chars(str) ? "unique" : "duplicates") << endl;
+static void _test_unique(const string& str) {
+  cout << "\"" << str << "\": ";
+  cout << (string_has_unique_chars(str) ? "unique" : "duplicate") << " chars" << endl;
 }
 
 void test_chapter_01_question_01() {
@@ -34,12 +34,23 @@ const string CHAPTER_01_QUESTION_02 =
   "Write code to reverse a C-Style String (C-String means that “abcd” is\n"
   "represented as five characters, including the null character).";
 
-void reverse_string(char* str) {
-  //TODO
+char* reverse_string(char* str) {
+  const size_t len = strlen(str);
+  for(size_t i = 0, j = len - 1; i < j; ++i, --j) {
+    std::swap(str[i], str[j]);
+  }
+  return str;
+}
+
+static void _test_reverse(const char* str) {
+  char* buf = strdup(str);
+  cout << "\"" << str << "\" --> \"" << reverse_string(buf) << "\"" << endl;
+  delete buf;
 }
 
 void test_chapter_01_question_02() {
-  //TODO
+  _test_reverse("hello");
+  _test_reverse("san francisco");
 }
 
 const string CHAPTER_01_QUESTION_03 =
@@ -49,33 +60,121 @@ const string CHAPTER_01_QUESTION_03 =
   "FOLLOW UP: Write the test cases for this method.";
 
 void remove_dup_chars(char* str) {
-  //TODO
+  // Table of flags indicating which chars we've seen
+  bool chars_seen[128] = {0};
+
+  // As we examine the string, we'll read from one location and write to another
+  size_t i_read = 0;
+  size_t i_write = 0;
+  const size_t len = strlen(str);
+
+  while(i_read < len) {
+    // If we've seen this char before, skip it
+    if(chars_seen[str[i_read]]) {
+      ++i_read;
+      continue;
+    }
+
+    // We haven't seen the char before, so copy it. (We can skip copying if
+    // the read and write indexes are the same).
+    if(i_read != i_write) {
+      str[i_write] = str[i_read];
+    }
+
+    // Record that we've seen this char
+    chars_seen[str[i_read]] = true;
+
+    // Move on
+    ++i_read;
+    ++i_write;
+  }
+
+  // Terminate the string
+  str[i_write] = '\0';
+}
+
+static void _test_rm_dups(const char* str) {
+  char buf[128] = {0};
+  strcpy(buf, str);
+  remove_dup_chars(buf);
+  cout << "\"" << str << "\" --> \"" << buf << "\"" << endl;
 }
 
 void test_chapter_01_question_03() {
-  //TODO
+  _test_rm_dups("");
+  _test_rm_dups("a");
+  _test_rm_dups("ab");
+  _test_rm_dups("aab");
+  _test_rm_dups("aaabbb");
+  _test_rm_dups("ababab");
+  _test_rm_dups("hello world");
 }
 
 const string CHAPTER_01_QUESTION_04 =
   "Write a method to decide if two strings are anagrams or not.";
 
 bool strings_are_anagrams(const string& a, const string& b) {
-  return false; //TODO
+  string a_sorted = a;
+  string b_sorted = b;
+  std::sort(a_sorted.begin(), a_sorted.end());
+  std::sort(b_sorted.begin(), b_sorted.end());
+  return (a_sorted == b_sorted);
+}
+
+static void _test_anagrams(const string& a, const string& b) {
+  const bool yes = strings_are_anagrams(a, b);
+  cout << '"' << a << "\" and \"" << b << "\": " << (yes ? "" : "NOT ") << "anagrams" << endl;
 }
 
 void test_chapter_01_question_04() {
-  //TODO
+  _test_anagrams("hello", "lleho");
+  _test_anagrams("hello", "lleHo");
+  _test_anagrams("san", "francisco");
 }
 
 const string CHAPTER_01_QUESTION_05 =
   "Write a method to replace all spaces in a string with ‘%20’.";
 
 void encode_spaces(string& str) {
-  //TODO
+  string buf;
+  size_t num_spaces = 0;
+
+  // Count all the spaces
+  for(size_t i = 0; i < str.size(); ++i) {
+    if(str[i] == ' ') {
+      ++num_spaces;
+    }
+  }
+
+  // Compute required size of new string
+  size_t newsize = str.size() + (num_spaces * 2);
+
+  // Construct the new string
+  buf.resize(newsize);
+  for(size_t i = 0, j = 0; i < str.size(); ++i) {
+    if(str[i] == ' ') {
+      buf[j++] = '%';
+      buf[j++] = '2';
+      buf[j++] = '0';
+    }
+    else {
+      buf[j++] = str[i];
+    }
+  }
+
+  // Set 'str' to the new value
+  std::swap(str, buf);
+}
+
+static void _test_spaces(const char* str) {
+  string encoded = str;
+  encode_spaces(encoded);
+  cout << "\"" << str << "\" --> \"" << encoded << "\"" << endl;
 }
 
 void test_chapter_01_question_05() {
-  //TODO
+  _test_spaces("hello");
+  _test_spaces("hello there how are you");
 }
 
 const string CHAPTER_01_QUESTION_06 =
@@ -87,7 +186,7 @@ void rotate_image(uint32_t** data, size_t dim) {
 }
 
 void test_chapter_01_question_06() {
-  //TODO
+  cout << "(coming soon...)" << endl; //TODO
 }
 
 const string CHAPTER_01_QUESTION_07 =
@@ -99,7 +198,7 @@ void array_expand_zero(int** data, size_t m, size_t n) {
 }
 
 void test_chapter_01_question_07() {
-  //TODO
+  cout << "(coming soon...)" << endl; //TODO
 }
 
 const string CHAPTER_01_QUESTION_08 =
@@ -113,7 +212,7 @@ bool strings_are_rotations(const string& a, const string& b) {
 }
 
 void test_chapter_01_question_08() {
-  //TODO
+  cout << "(coming soon...)" << endl; //TODO
 }
 
 //==============================================================================

@@ -12,7 +12,17 @@ using namespace std;
 const char* SEP =
   "================================================================================";
 
+// Typedef for answer function
 typedef void (*answer_func_ptr)();
+
+// Stream manipulators for bold fonts
+std::ostream& bold_on(std::ostream& os) {
+  return os << "\e[1m";
+}
+
+std::ostream& bold_off(std::ostream& os) {
+  return os << "\e[0m";
+}
 
 //==============================================================================
 // Exercise struct to hold an exercise's number, question text, and answer
@@ -44,9 +54,10 @@ public:
 
 // Print an exercise to a stream
 ostream& operator<<(ostream& out, const Exercise& x) {
-  out << "QUESTION " << x.chapter << '.' << x.number << endl;
-  out << "------------" << endl;
+  out << bold_on << "QUESTION " << x.chapter << '.' << x.number << endl;
+  out << "------------" << bold_off << endl;
   out << x.question << endl;
+  out << "\nANSWER:" << endl;
   x.answer();
   return out;
 }
@@ -84,9 +95,11 @@ public:
   // Run all exercises
   void run() {
     initialize();
+    cout << bold_on;
     cout << SEP << endl;
     cout << "Chapter " << number() << ": " << title() << endl;
     cout << SEP << "\n\n";
+    cout << bold_off;
     for(int i = 1; i <= num_exercises(); ++i) {
       cout << exercise(i) << endl;
       // TODO: run the 'answer' function
