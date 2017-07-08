@@ -30,6 +30,8 @@ void test_chapter_01_question_01() {
   _test_unique("world");
 }
 
+//------------------------------------------------------------------------------
+
 const string CHAPTER_01_QUESTION_02 =
   "Write code to reverse a C-Style String (C-String means that “abcd” is\n"
   "represented as five characters, including the null character).";
@@ -53,10 +55,12 @@ void test_chapter_01_question_02() {
   _test_reverse("san francisco");
 }
 
+//------------------------------------------------------------------------------
+
 const string CHAPTER_01_QUESTION_03 =
-  "Design an algorithm and write code to remove the duplicate characters in a string\n"
-  "without using any additional buffer. NOTE: One or two additional variables are\n"
-  "fine; an extra copy of the array is not.\n"
+  "Design an algorithm and write code to remove the duplicate characters in a\n"
+  "string without using any additional buffer. NOTE: One or two additional\n"
+  "variables are fine; an extra copy of the array is not.\n"
   "FOLLOW UP: Write the test cases for this method.";
 
 void remove_dup_chars(char* str) {
@@ -110,6 +114,8 @@ void test_chapter_01_question_03() {
   _test_rm_dups("hello world");
 }
 
+//------------------------------------------------------------------------------
+
 const string CHAPTER_01_QUESTION_04 =
   "Write a method to decide if two strings are anagrams or not.";
 
@@ -122,8 +128,8 @@ bool strings_are_anagrams(const string& a, const string& b) {
 }
 
 static void _test_anagrams(const string& a, const string& b) {
-  const bool yes = strings_are_anagrams(a, b);
-  cout << '"' << a << "\" and \"" << b << "\": " << (yes ? "" : "NOT ") << "anagrams" << endl;
+  cout << '"' << a << "\" and \"" << b << "\": ";
+  cout << (strings_are_anagrams(a, b) ? "" : "NOT ") << "anagrams" << endl;
 }
 
 void test_chapter_01_question_04() {
@@ -131,6 +137,8 @@ void test_chapter_01_question_04() {
   _test_anagrams("hello", "lleHo");
   _test_anagrams("san", "francisco");
 }
+
+//------------------------------------------------------------------------------
 
 const string CHAPTER_01_QUESTION_05 =
   "Write a method to replace all spaces in a string with ‘%20’.";
@@ -177,17 +185,71 @@ void test_chapter_01_question_05() {
   _test_spaces("hello there how are you");
 }
 
+//------------------------------------------------------------------------------
+
 const string CHAPTER_01_QUESTION_06 =
   "Given an image represented by an NxN matrix, where each pixel in the image is 4\n"
   "bytes, write a method to rotate the image by 90 degrees. Can you do this in place?";
 
-void rotate_image(uint32_t** data, size_t dim) {
-  //TODO
+typedef vector<vector<uint32_t> > image_t;
+
+struct Point {
+  Point(size_t x, size_t y, const image_t& image)
+  : x(x), y(y), value(image[x][y])
+  { }
+  size_t x, y;
+  uint32_t value;
+};
+
+void rotate_image(image_t& image) {
+  const size_t dim = image.size();
+  for(size_t level = 0; level < (dim / 2); ++level) {
+    for(size_t i = level; i < dim - 1 - level; ++i) {
+      // Get four points to rotate
+      Point p1(level,               i + level,            image);
+      Point p2(i + level,           dim - 1 - level,      image);
+      Point p3(dim - 1 - level,     dim - 1 - level - i,  image);
+      Point p4(dim - 1 - level - i, level,                image);
+
+      // Rotate the points by copying values
+      image[p1.x][p1.y] = p4.value;
+      image[p2.x][p2.y] = p1.value;
+      image[p3.x][p3.y] = p2.value;
+      image[p4.x][p4.y] = p3.value;
+    }
+  }
+}
+
+static void _init_image(image_t& image, size_t dim) {
+  image.resize(dim);
+  uint32_t val = 1;
+  for(size_t i = 0; i < dim; ++i) {
+    image[i].resize(dim, val++);
+  }
+}
+
+static void _print_image(const image_t& image) {
+  const size_t dim = image.size();
+  for(size_t i = 0; i < dim; ++i) {
+    for(size_t j = 0; j < dim; ++j) {
+      cout << image[i][j] << ' ';
+    }
+    cout << endl;
+  }
 }
 
 void test_chapter_01_question_06() {
-  cout << "(coming soon...)" << endl; //TODO
+  image_t image;
+  size_t dim = 5;
+  _init_image(image, dim);
+  cout << "\nOriginal:\n";
+  _print_image(image);
+  rotate_image(image);
+  cout << "\nRotated:\n";
+  _print_image(image);
 }
+
+//------------------------------------------------------------------------------
 
 const string CHAPTER_01_QUESTION_07 =
   "Write an algorithm such that if an element in an MxN matrix is 0, its entire\n"
@@ -200,6 +262,8 @@ void array_expand_zero(int** data, size_t m, size_t n) {
 void test_chapter_01_question_07() {
   cout << "(coming soon...)" << endl; //TODO
 }
+
+//------------------------------------------------------------------------------
 
 const string CHAPTER_01_QUESTION_08 =
   "Assume you have a method isSubstring which checks if one word is a substring of\n"
