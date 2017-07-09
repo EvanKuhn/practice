@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -22,6 +23,12 @@ std::ostream& bold_on(std::ostream& os) {
 
 std::ostream& bold_off(std::ostream& os) {
   return os << "\e[0m";
+}
+
+// Seed the random number generator
+void seed_rand() {
+  time_t t;
+  srand((unsigned) time(&t));
 }
 
 //==============================================================================

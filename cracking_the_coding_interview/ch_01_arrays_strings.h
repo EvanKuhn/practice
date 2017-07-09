@@ -255,12 +255,110 @@ const string CHAPTER_01_QUESTION_07 =
   "Write an algorithm such that if an element in an MxN matrix is 0, its entire\n"
   "row and column is set to 0.";
 
-void array_expand_zero(int** data, size_t m, size_t n) {
+
+class Matrix {
+public:
+  // Constructors
+  Matrix()                    { }
+  explicit Matrix(size_t dim) { resize(dim, dim); }
+  Matrix(size_t m, size_t n)  { resize(m, n); }
+
+  // Sizes
+  size_t m() const { return m_data.size(); }
+  size_t n() const { return m_data.empty() ? 0 : m_data[0].size(); }
+
+  // Access data
+  // NOTE: this exposes the internals (vectors) which isn't great
+  vector<uint32_t>&       operator[](size_t i)       { return m_data[i]; }
+  const vector<uint32_t>& operator[](size_t i) const { return m_data[i]; }
+
+  // Clear the matrix
+  void clear() { m_data.clear(); }
+
+  // Resize to M x N
+  Matrix& resize(size_t m, size_t n) {
+    m_data.resize(m);
+    for(size_t i = 0; i < m; ++i) { m_data[i].resize(n); }
+    return *this;
+  }
+
+  // Assign each element a random value in the range [0,max).
+  void fill(uint32_t max = 100) {
+    const size_t M = m();
+    const size_t N = n();
+    for(size_t i = 0; i < M; ++i) {
+      for(size_t j = 0; j < N; ++j) {
+        m_data[i][j] = rand() % max;
+      }
+    }
+  }
+
+  // For any zero value, extend it to all cells in the same row and column
+  void extend_zeroes() {
+    const size_t M = m();
+    const size_t N = n();
+
+    // Collect the set of rows  and columns to zero out
+    unordered_set<size_t> rows;
+    unordered_set<size_t> cols;
+
+    for(size_t i = 0; i < M; ++i) {
+      for(size_t j = 0; j < N; ++j) {
+        if(m_data[i][j] == 0) {
+          rows.insert(i);
+          cols.insert(j);
+        }
+      }
+    }
+
+    // Zero out the rows and columns
+    typedef unordered_set<size_t>::const_iterator set_iter;
+
+    for(set_iter it = rows.begin(); it != rows.end(); ++it) {
+      for(int col = 0; col < N; ++col) {
+        m_data[*it][col] = 0;
+      }
+    }
+
+    for(set_iter it = cols.begin(); it != cols.end(); ++it) {
+      for(int row = 0; row < M; ++row) {
+        m_data[row][*it] = 0;
+      }
+    }
+  }
+
+private:
+  vector<vector<uint32_t> > m_data;
+};
+
+// Print a matrix to the stream
+ostream& operator<<(ostream& out, const Matrix& matrix) {
+  const size_t M = matrix.m();
+  const size_t N = matrix.n();
+  char buf[32] = {0};
+  for(size_t i = 0; i < M; ++i) {
+    for(size_t j = 0; j < N; ++j) {
+      sprintf(buf, "%2d", matrix[i][j]);
+      out << buf;
+      if(j < N - 1) out << ' ';
+    }
+    if(i < M - 1) out << "\n";
+  }
+  return out;
+}
+
+void array_expand_zero(Matrix& matrix) {
   //TODO
 }
 
 void test_chapter_01_question_07() {
-  cout << "(coming soon...)" << endl; //TODO
+  seed_rand();
+  Matrix matrix(6,12);
+
+  matrix.fill(50);
+  cout << "\nOriginal:\n" << matrix << endl;
+  matrix.extend_zeroes();
+  cout << "\nZeroed-out:\n" << matrix << endl;
 }
 
 //------------------------------------------------------------------------------
