@@ -395,21 +395,16 @@ void test_chapter_01_question_08() {
 // Chapter class for printing questions and solutions
 //==============================================================================
 
-class Chapter01 : public Chapter {
-public:
-  Chapter01()
-    : Chapter(1, "Arrays and Strings")
-  { }
-
-protected:
-  virtual void init_exercises() {
-    add_exercise(1, CHAPTER_01_QUESTION_01, test_chapter_01_question_01);
-    add_exercise(2, CHAPTER_01_QUESTION_02, test_chapter_01_question_02);
-    add_exercise(3, CHAPTER_01_QUESTION_03, test_chapter_01_question_03);
-    add_exercise(4, CHAPTER_01_QUESTION_04, test_chapter_01_question_04);
-    add_exercise(5, CHAPTER_01_QUESTION_05, test_chapter_01_question_05);
-    add_exercise(6, CHAPTER_01_QUESTION_06, test_chapter_01_question_06);
-    add_exercise(7, CHAPTER_01_QUESTION_07, test_chapter_01_question_07);
-    add_exercise(8, CHAPTER_01_QUESTION_08, test_chapter_01_question_08);
-  }
+Exercise CHAPTER_01_EXERCISES[] = {
+  Exercise(1, 1, CHAPTER_01_QUESTION_01, test_chapter_01_question_01),
+  Exercise(1, 2, CHAPTER_01_QUESTION_02, test_chapter_01_question_02),
+  Exercise(1, 3, CHAPTER_01_QUESTION_03, test_chapter_01_question_03),
+  Exercise(1, 4, CHAPTER_01_QUESTION_04, test_chapter_01_question_04),
+  Exercise(1, 5, CHAPTER_01_QUESTION_05, test_chapter_01_question_05),
+  Exercise(1, 6, CHAPTER_01_QUESTION_06, test_chapter_01_question_06),
+  Exercise(1, 7, CHAPTER_01_QUESTION_07, test_chapter_01_question_07),
+  Exercise(1, 8, CHAPTER_01_QUESTION_08, test_chapter_01_question_08),
 };
+
+Chapter g_chapter_01(1, "Arrays and Strings", CHAPTER_01_EXERCISES,
+  array_length(CHAPTER_01_EXERCISES));

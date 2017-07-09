@@ -31,6 +31,9 @@ void seed_rand() {
   srand((unsigned) time(&t));
 }
 
+// Compute a C array length
+#define array_length(array) (sizeof(array) / sizeof(array[0]))
+
 //==============================================================================
 // Exercise struct to hold an exercise's number, question text, and answer
 // function. Also include a function to print an excercise to a stream.
@@ -70,10 +73,7 @@ ostream& operator<<(ostream& out, const Exercise& x) {
 }
 
 //==============================================================================
-// A Chapter object holds a set of exercises. It can be extended to add specific
-// exercises per chapter.
-// TODO: we could probably replace all of this with an ExerciseRegistry, and
-// allow Exercise objects to be sorted.
+// A Chapter object holds a set of exercises.
 //==============================================================================
 
 class Chapter {
@@ -83,11 +83,31 @@ public:
     , m_title(title)
   { }
 
+  Chapter(int number, const string& title, const Exercise* exercises, size_t num_ex)
+    : m_number(number)
+    , m_title(title)
+  {
+    for(size_t i = 0; i < num_ex; ++i) {
+      add_exercise(exercises[i]);
+    }
+  }
+
   // Get the chapter number
   int number() const { return m_number; }
 
   // Get the chapter title
   const string& title() const { return m_title; }
+
+  // Add an exercise. Will raise a std::logic_error if the chapter number
+  // doesn't match this chapter.
+  void add_exercise(const Exercise& ex) {
+    if(ex.chapter != m_number) {
+      ostringstream buf;
+      buf << "Added exercise " << ex.number << " to chapter " << m_number;
+      throw logic_error(buf.str());
+    }
+    m_exercises[ex.number] = ex;
+  }
 
   // Get the number of exercises in this chapter
   int num_exercises() const {
@@ -101,7 +121,6 @@ public:
 
   // Run all exercises
   void run() {
-    initialize();
     cout << bold_on;
     cout << SEP << endl;
     cout << "Chapter " << number() << ": " << title() << endl;
@@ -109,34 +128,7 @@ public:
     cout << bold_off;
     for(int i = 1; i <= num_exercises(); ++i) {
       cout << exercise(i) << endl;
-      // TODO: run the 'answer' function
     }
-  }
-
-protected:
-  // Initialize questions and answers. Override in base classes!
-  virtual void init_exercises() = 0;
-
-  // Initialize the exercises if not already done
-  void initialize() {
-    if(m_exercises.empty()) {
-      init_exercises();
-    }
-  }
-
-  // Add an exercise.
-  // - This will check the exercise's number against the expected number and
-  //   raise a std::logic_error if they don't match.
-  void add_exercise(int expected, const string& question, answer_func_ptr answer)
-  {
-    const int ch_number = m_number;
-    const int ex_number = m_exercises.size() + 1;
-    if(ex_number != expected) {
-      ostringstream buf;
-      buf << "Added exercise " << ex_number << ", expected " << expected;
-      throw logic_error(buf.str());
-    }
-    m_exercises[ex_number] = Exercise(ch_number, ex_number, question, answer);
   }
 
 private:

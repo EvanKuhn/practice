@@ -193,20 +193,13 @@ void test_chapter_02_question_05() {
 // Chapter class for printing questions and solutions
 //==============================================================================
 
-//Chapter g_chapter_02(2, "Linked Lists", g_chapter_02_exercises);
-
-class Chapter02 : public Chapter {
-public:
-  Chapter02()
-    : Chapter(2, "Linked Lists")
-  { }
-
-protected:
-  virtual void init_exercises() {
-    add_exercise(1, CHAPTER_02_QUESTION_01, test_chapter_02_question_01);
-    add_exercise(2, CHAPTER_02_QUESTION_02, test_chapter_02_question_02);
-    add_exercise(3, CHAPTER_02_QUESTION_03, test_chapter_02_question_03);
-    add_exercise(4, CHAPTER_02_QUESTION_04, test_chapter_02_question_04);
-    add_exercise(5, CHAPTER_02_QUESTION_05, test_chapter_02_question_05);
-  }
+Exercise CHAPTER_02_EXERCISES[] = {
+  Exercise(2, 1, CHAPTER_02_QUESTION_01, test_chapter_02_question_01),
+  Exercise(2, 2, CHAPTER_02_QUESTION_02, test_chapter_02_question_02),
+  Exercise(2, 3, CHAPTER_02_QUESTION_03, test_chapter_02_question_03),
+  Exercise(2, 4, CHAPTER_02_QUESTION_04, test_chapter_02_question_04),
+  Exercise(2, 5, CHAPTER_02_QUESTION_05, test_chapter_02_question_05),
 };
+
+Chapter g_chapter_02(2, "Linked Lists", CHAPTER_02_EXERCISES,
+  array_length(CHAPTER_02_EXERCISES));
