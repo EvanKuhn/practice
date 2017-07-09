@@ -90,6 +90,9 @@ public:
   void dedup();
   void dedup_no_extra_space();
 
+  // Problem 2: return the Nth-to-last node
+  const ListNode* nth_to_last(size_t n) const;
+
 private:
   ListNode* m_head;
   ListNode* m_tail;
@@ -179,8 +182,46 @@ void test_chapter_02_question_01() {
 const string CHAPTER_02_QUESTION_02 =
   "Implement an algorithm to find the nth to last element of a singly linked list.";
 
-void test_chapter_02_question_02() {
+const ListNode* List::nth_to_last(size_t n) const {
+  ListNode* front = m_head;
+  ListNode* back = NULL;
 
+  // Move the `front` and `back` pointers along the list. Move `front` forward
+  // N times, then init `back to the head, then move both until `front` is null.
+  // At that point, return the `back` node.
+  for(size_t i = 0; i < n; ++i) {
+    if(!front) return NULL;
+    front = front->next;
+  }
+  back = m_head;
+
+  // Move both pointers
+  while(front) {
+    front = front->next;
+    back = back->next;
+  }
+  return back;
+}
+
+string _node_value(const ListNode* node) {
+  ostringstream ss;
+  if(node)
+    ss << node->value;
+  else
+    ss << "(null)";
+  return ss.str();
+}
+
+void test_chapter_02_question_02() {
+  List list;
+  list.fill(10, 100);
+  cout << "List: " << list << endl;
+  cout << "1st to last: " << _node_value(list.nth_to_last(1)) << endl;
+  cout << "2nd to last: " << _node_value(list.nth_to_last(2)) << endl;
+  cout << "3rd to last: " << _node_value(list.nth_to_last(3)) << endl;
+  cout << "4th to last: " << _node_value(list.nth_to_last(4)) << endl;
+  cout << "10th to last: " << _node_value(list.nth_to_last(10)) << endl;
+  cout << "11th to last: " << _node_value(list.nth_to_last(11)) << endl;
 }
 
 //------------------------------------------------------------------------------
