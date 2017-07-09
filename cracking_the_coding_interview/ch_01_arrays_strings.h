@@ -369,16 +369,30 @@ const string CHAPTER_01_QUESTION_08 =
   "of s1 using only one call to isSubstring.\n"
   "(eg: “waterbottle” is a rotation of “erbottlewat”).";
 
-bool strings_are_rotations(const string& a, const string& b) {
-  return false;//TODO
+bool is_substring(const string& str, const string& substr) {
+  return str.find(substr) != string::npos;
+}
+
+bool strings_are_rotations(const string& s1, const string& s2) {
+  // The trick is to append s1 to itself, so then s2 WILL be a substring of s1.
+  // Also of course, s1 and s2 must be the same size.
+  return s1.size() == s2.size() && is_substring(s1 + s1, s2);
+}
+
+static void _check_rotation(const string& s1, const string& s2) {
+  cout << '"' << s1 << "\", \"" << s2 << "\": rotations? ";
+  cout << (strings_are_rotations(s1, s2) ? "YES" : "NO") << endl;
 }
 
 void test_chapter_01_question_08() {
-  cout << "(coming soon...)" << endl; //TODO
+  _check_rotation("", "");
+  _check_rotation("a", "a");
+  _check_rotation("cycle", "ecycl");
+  _check_rotation("blah", "blahblah");
 }
 
 //==============================================================================
-// Chapter class for printing questions and testing solutions
+// Chapter class for printing questions and solutions
 //==============================================================================
 
 class Chapter01 : public Chapter {
