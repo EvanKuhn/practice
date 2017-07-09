@@ -18,6 +18,8 @@ const size_t NUM_CHAPTERS = array_length(CHAPTERS);
 //==============================================================================
 
 int main(int argc, char** argv) {
+  seed_rand();
+
   // Run a particular chapter
   if(argc > 1) {
     int chapter = atoi(argv[1]);

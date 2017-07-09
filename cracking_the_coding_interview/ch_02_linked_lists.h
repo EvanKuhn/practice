@@ -18,6 +18,13 @@ public:
   // Initialize an empty list
   List() : m_head(NULL), m_tail(NULL), m_size(0) { }
 
+  // Fill a list with `count` random values in the range [0,max)
+  List(size_t count, int max)
+    : m_head(NULL), m_tail(NULL), m_size(0)
+  {
+    fill(count, max);
+  }
+
   // Delete all nodes on destruction
   ~List() { clear(); }
 
@@ -63,8 +70,10 @@ public:
     ++m_size;
   }
 
-  // Fill the list with `count` random values in the range [0,max)
+  // Fill the list with `count` random values in the range [0,max).
+  // Will clear any existing values first.
   void fill(size_t count, int max) {
+    clear();
     for(size_t i = 0; i < count; ++i) {
       append(rand() % max);
     }
@@ -271,8 +280,45 @@ const string CHAPTER_02_QUESTION_04 =
   "Input: (3 -> 1 -> 5) + (5 -> 9 -> 2)\n"
   "Output: 8 -> 0 -> 8";
 
-void test_chapter_02_question_04() {
+// Operator to add two list and produce a third list representing the sum
+List operator+(const List& a, const List& b) {
+  List result;
+  const ListNode* cur_a = a.head();
+  const ListNode* cur_b = b.head();
+  int carry = 0;
 
+  while(cur_a || cur_b) {
+    const int val_a = (cur_a ? cur_a->value : 0);
+    const int val_b = (cur_b ? cur_b->value : 0);
+    const int sum = val_a + val_b + carry;
+    const int digit = sum % 10;
+    carry = sum / 10;
+    result.append(digit);
+    if(cur_a) cur_a = cur_a->next;
+    if(cur_b) cur_b = cur_b->next;
+  }
+
+  if(carry) {
+    result.append(carry);
+  }
+
+  return result;
+}
+
+void test_chapter_02_question_04() {
+  List a(3, 10);
+  List b(3, 10);
+  cout << endl;
+  cout << "A:   " << a << endl;
+  cout << "B:   " << b << endl;
+  cout << "A+B: " << (a + b) << endl;
+
+  a.fill(2,10);
+  b.fill(4,10);
+  cout << endl;
+  cout << "A:   " << a << endl;
+  cout << "B:   " << b << endl;
+  cout << "A+B: " << (a + b) << endl;
 }
 
 //------------------------------------------------------------------------------

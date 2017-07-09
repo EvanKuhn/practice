@@ -352,9 +352,7 @@ void array_expand_zero(Matrix& matrix) {
 }
 
 void test_chapter_01_question_07() {
-  seed_rand();
   Matrix matrix(6,12);
-
   matrix.fill(50);
   cout << "\nOriginal:\n" << matrix << endl;
   matrix.extend_zeroes();
