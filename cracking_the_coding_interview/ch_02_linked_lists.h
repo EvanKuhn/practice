@@ -19,13 +19,18 @@ public:
   List() : m_head(NULL), m_tail(NULL), m_size(0) { }
 
   // Delete all nodes on destruction
-  ~List() {
+  ~List() { clear(); }
+
+  // Delete all nodes in the list
+  void clear() {
     ListNode* cur = m_head;
     while(cur) {
       ListNode* next = cur->next;
       delete cur;
       cur = next;
     }
+    m_size = 0;
+    m_head = m_tail = NULL;
   }
 
   // Get the size
@@ -67,11 +72,16 @@ public:
 
   // Sort the list using an O(N^2) sorting algo
   void sort() {
-    for(ListNode* start = m_head; start && start->next; start = start->next) {
-      for(ListNode* cur = start; cur && cur->next; cur = cur->next) {
-        if(cur->value > cur->next->value) {
-          std::swap(cur->value, cur->next->value);
+    ListNode* smallest = NULL;
+    for(ListNode* start = m_head; start; start = start->next) {
+      ListNode* smallest = start;
+      for(ListNode* cur = start; cur; cur = cur->next) {
+        if(cur->value < smallest->value) {
+          smallest = cur;
         }
+      }
+      if(smallest != start) {
+        std::swap(start->value, smallest->value);
       }
     }
   }
@@ -128,12 +138,40 @@ void List::dedup() {
   }
 }
 
+void List::dedup_no_extra_space() {
+  sort();
+  ListNode* curr = m_head;
+
+  while(curr && curr->next) {
+    // If the next node has the same value as the current one, delete it
+    if(curr->next->value == curr->value) {
+      ListNode* next = curr->next;
+      curr->next = curr->next->next;
+      delete next;
+      --m_size;
+    }
+    // Next node has a different value. Move ahead.
+    else {
+      curr = curr->next;
+    }
+  }
+}
+
 void test_chapter_02_question_01() {
   List list;
+
+  cout << "\nWith extra space:" << endl;
   list.fill(10, 8);
-  cout << "Original: " << list << endl;
+  cout << "- Original: " << list << endl;
   list.dedup();
-  cout << "Dedupped: " << list << endl;
+  cout << "- Dedupped: " << list << endl;
+
+  cout << "\nNo extra space:" << endl;
+  list.clear();
+  list.fill(10, 8);
+  cout << "- Original: " << list << endl;
+  list.dedup_no_extra_space();
+  cout << "- Dedupped: " << list << endl;
 }
 
 //------------------------------------------------------------------------------
