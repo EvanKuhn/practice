@@ -91,7 +91,11 @@ public:
   void dedup_no_extra_space();
 
   // Problem 2: return the Nth-to-last node
+  ListNode*       nth_to_last(size_t n);
   const ListNode* nth_to_last(size_t n) const;
+
+  // Problem 3: delete a node from the middle of the list
+  void delete_middle_node(ListNode* node);
 
 private:
   ListNode* m_head;
@@ -182,7 +186,7 @@ void test_chapter_02_question_01() {
 const string CHAPTER_02_QUESTION_02 =
   "Implement an algorithm to find the nth to last element of a singly linked list.";
 
-const ListNode* List::nth_to_last(size_t n) const {
+ListNode* List::nth_to_last(size_t n) {
   ListNode* front = m_head;
   ListNode* back = NULL;
 
@@ -203,7 +207,11 @@ const ListNode* List::nth_to_last(size_t n) const {
   return back;
 }
 
-string _node_value(const ListNode* node) {
+const ListNode* List::nth_to_last(size_t n) const {
+  return const_cast<List*>(this)->nth_to_last(n);
+}
+
+static string _node_value(const ListNode* node) {
   ostringstream ss;
   if(node)
     ss << node->value;
@@ -233,8 +241,23 @@ const string CHAPTER_02_QUESTION_03 =
   "Input: the node ‘c’ from the linked list a->b->c->d->e\n"
   "Result: nothing is returned, but the new linked list looks like a->b->d->e";
 
-void test_chapter_02_question_03() {
+// This question requires a dumb trick: swap this node's value with the next
+// node, and then delete the next node.
+void List::delete_middle_node(ListNode* node) {
+  std::swap(node->value, node->next->value);
+  ListNode* temp = node->next;
+  node->next = node->next->next;
+  delete temp;
+  --m_size;
+}
 
+void test_chapter_02_question_03() {
+  List list;
+  list.fill(5, 10);
+  cout << "Original: " << list << endl;
+  ListNode* rm = list.nth_to_last(3);
+  list.delete_middle_node(rm);
+  cout << "Remove 3rd from last: " << list << endl;
 }
 
 //------------------------------------------------------------------------------
