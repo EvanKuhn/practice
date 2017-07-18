@@ -333,8 +333,126 @@ const string CHAPTER_02_QUESTION_05 =
   "input: A -> B -> C -> D -> E -> C [the same C as earlier]\n"
   "output: C";
 
-void test_chapter_02_question_05() {
+// Create a circular list with a given pre-cycle length and cycle length. The
+// pre-cycle length is the length of the 'path' of nodes leading up to the cycle.
+// This function returns the head of the list. It also returns a pointer to the
+// node that is the start of the cycle, via the 'loop_start' param.
+ListNode* _make_circular_list(int pre_cycle_len, int cycle_len, ListNode*& loop_start)
+{
+  printf("_make_circular_list(%d, %d)\n", pre_cycle_len, cycle_len);
+  ListNode* head = NULL;
+  ListNode* curr = NULL;
+  int val = 1;
 
+  // Create the "pre-cycle" node path
+  for(int i = 0; i < pre_cycle_len; ++i) {
+    if(!curr) {
+      head = curr = new ListNode(val++);
+    }
+    else {
+      curr->next = new ListNode(val++);
+      curr = curr->next;
+    }
+  }
+
+  if(cycle_len > 0) {
+    // Create one extra node, which will be the start of the cycle
+    if(!curr) {
+      head = curr = new ListNode(val++);
+    }
+    else {
+      curr->next = new ListNode(val++);
+      curr = curr->next;
+    }
+
+    // Record the current node as the start of the cycle
+    loop_start = curr;
+    cout << "Hint: loop start at node " << loop_start->value << endl;
+
+    // Create the rest of the cycle
+    for(int i = 1; i < cycle_len; ++i) {
+      curr->next = new ListNode(val++);
+      curr = curr->next;
+    }
+
+    // Loop back to the beginning of the cycle
+    curr->next = loop_start;
+  }
+  return head;
+}
+
+ListNode* _find_cycle_start(ListNode* head) {
+  ListNode* slow = head;
+  ListNode* fast = head;
+
+  do {
+    // Check for end of list
+    if(!fast || !fast->next || !fast->next->next)
+      return NULL;
+
+    // Move pointers forward. Stop when they meet.
+    slow = slow->next;
+    fast = fast->next->next;
+  }
+  while(slow != fast);
+  //cout << "_find_cycle_start: pointers met at node " << slow->value << endl;
+
+  // Move slow back to start. Iterate slow and fast at same rate. They will
+  // meet at the loop start.
+  slow = head;
+  while(slow != fast) {
+    slow = slow->next;
+    fast = fast->next;
+  }
+  //cout << "_find_cycle_start: loop start at node " << slow->value << endl;
+  return slow;
+}
+
+void _test_find_cycle_start(int pre_cycle_len, int cycle_len) {
+  cout << endl;
+  ListNode* answer = NULL;
+  ListNode* list = _make_circular_list(pre_cycle_len, cycle_len, answer);
+  ListNode* start = _find_cycle_start(list);
+  if(start) {
+    cout << "Found cycle start at node " << start->value;
+    if(start->value == answer->value) {
+      cout << " (correct)" << endl;
+    }
+    else {
+      cout << " (WRONG!)" << endl;
+    }
+
+  }
+  else {
+    cout << "No cycle found" << endl;
+  }
+}
+
+// - Run the fast-pointer slow-pointer and get the node at which they meet.
+// - Say the loop is N nodes long.
+// - When SlowPtr hits LoopStart (first node in loop), the FastPtr will be K
+//   nodes ahead, where K is the number of iterations and also the length of
+//   any path leading up to the cycle.
+// - When FastPtr and SlowPtr meet, they will meet K nodes before LoopStart:
+//   - FastPtr must travel (N - K) nodes to LoopStart.
+//   - SlowPtr will have moved (N - K) / 2 nodes in the same time.
+//   - So then FastPtr moves ahead another (N - K) nodes to meet SlowPtr, thus
+//     putting them K nodes before LoopStart.
+// - Finally, rewind one pointer to the list head. Run both at the same speed.
+//   After K iterations, they will meet at LoopStart.
+//
+// TIP: only check for FastPtr == SlowPtr after moving BOTH pointers. Don't
+//      check at each node.
+void test_chapter_02_question_05() {
+  _test_find_cycle_start(1,2);
+  _test_find_cycle_start(1,3);
+  _test_find_cycle_start(1,4);
+  _test_find_cycle_start(1,5);
+
+  _test_find_cycle_start(2,2);
+  _test_find_cycle_start(2,3);
+  _test_find_cycle_start(2,4);
+  _test_find_cycle_start(2,5);
 }
 
 //==============================================================================
