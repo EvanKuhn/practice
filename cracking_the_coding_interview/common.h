@@ -1,6 +1,9 @@
 #pragma once
 
+#include <exception>
+#include <list>
 #include <iostream>
+#include <stack>
 #include <stdexcept>
 #include <string>
 #include <sstream>

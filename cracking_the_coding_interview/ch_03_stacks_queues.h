@@ -39,7 +39,90 @@ const string CHAPTER_03_QUESTION_03 =
 "Implement a function popAt(int index) which performs a pop operation on a\n"
 "specific sub-stack";
 
-void test_chapter_03_question_03() { }
+template <typename T>
+class SetOfStacks {
+public:
+  // Max size of a single stack in the set
+  static const size_t MAX_STACK_SIZE = 10;
+
+  SetOfStacks()
+    : m_size(0)
+    , m_max_stack_size(MAX_STACK_SIZE)
+  { }
+
+  explicit SetOfStacks(size_t max_stack_size)
+    : m_size(0)
+    , m_max_stack_size(max_stack_size)
+  { }
+
+  // Get the total number of elements in the set of stacks
+  size_t size() const { return m_size; }
+
+  // Get the number of internal stacks
+  size_t num_stacks() const { return m_stacks.size(); }
+
+  // Push a value onto the stack
+  void push(const T& value);
+
+  // Remove the top value in the stack
+  void pop();
+
+  // Return a reference to the top value in the stack
+  T&       top()       { return m_stacks.back().top(); }
+  const T& top() const { return m_stacks.back().top(); }
+
+private:
+  // Data members
+  size_t m_size;
+  size_t m_max_stack_size;
+  std::list<std::stack<T> > m_stacks;
+};
+
+template <typename T>
+void SetOfStacks<T>::push(const T& value) {
+  // Create a new stack if the list of stacks is empty
+  if(m_stacks.empty()) {
+    m_stacks.resize(1);
+  }
+  // ... or if the last (topmost) stack is full
+  else if(m_stacks.back().size() > m_max_stack_size) {
+    m_stacks.resize(m_stacks.size() + 1);
+  }
+  // Push the new value
+  m_stacks.back().push(value);
+  ++m_size;
+}
+
+template <typename T>
+void SetOfStacks<T>::pop() {
+  // Pop the top value, and delete the stack if it becomes empty
+  m_stacks.back().pop();
+  if(m_stacks.back().empty()) {
+    m_stacks.pop_back();
+  }
+  --m_size;
+}
+
+void test_chapter_03_question_03() {
+  cout << "Creating SetOfStacks with max stack size of 4" << endl;
+  SetOfStacks<int> sos(4);
+
+  cout << "Adding values 10 to 20" << endl;
+  for(int i = 10; i <= 20; ++i) {
+    sos.push(i);
+  }
+  cout << "sos.size = " << sos.size() << endl;
+  cout << "sos.num_stacks = " << sos.num_stacks() << endl;
+
+  cout << "Pop all values: ";
+  while(sos.size() > 0) {
+    cout << sos.top() << ' ';
+    sos.pop();
+  }
+  cout << endl;
+  cout << "sos.size = " << sos.size() << endl;
+  cout << "sos.num_stacks = " << sos.num_stacks() << endl;
+}
 
 //------------------------------------------------------------------------------
 
@@ -53,14 +136,206 @@ const string CHAPTER_03_QUESTION_04 =
 "  (C) A disk can only be placed on top of a larger disk.\n"
 "Write a program to move the disks from the first rod to the last using Stacks";
 
-void test_chapter_03_question_04() { }
+class TowersOfHanoi {
+public:
+  // Constructor. Takes the number of disks as the `size`.
+  explicit TowersOfHanoi(size_t num_disks);
+
+  // Return the number of disks in the puzzle
+  size_t num_disks() const { return m_num_disks; }
+
+  // Solve the puzzle
+  void solve();
+
+  // Helper function to print the current game state
+  void print(ostream& out) const;
+
+private:
+  // Enum identifying the left, middle, and right pegs
+  enum EPeg { PEG_LEFT, PEG_MID, PEG_RIGHT };
+
+  // Move `num` disks from one peg to another
+  void _move(EPeg from, EPeg to, size_t num);
+
+  // Move from one peg to another
+  void _move(EPeg from, EPeg to);
+
+  // Give two pegs, get the 'other' peg
+  static EPeg _other_peg(EPeg a, EPeg b);
+
+  size_t             m_num_disks;
+  mutable stack<int> m_left;
+  mutable stack<int> m_mid;
+  mutable stack<int> m_right;
+};
+
+TowersOfHanoi::TowersOfHanoi(size_t num_disks)
+  : m_num_disks(num_disks)
+{
+  for(size_t i = num_disks; i > 0; --i) {
+    m_left.push(i);
+  }
+}
+
+void TowersOfHanoi::solve() {
+  _move(PEG_LEFT, PEG_RIGHT, m_num_disks);
+}
+
+TowersOfHanoi::EPeg TowersOfHanoi::_other_peg(EPeg a, EPeg b) {
+  if(a != PEG_LEFT && b != PEG_LEFT) return PEG_LEFT;
+  if(a != PEG_MID && b != PEG_MID) return PEG_MID;
+  return PEG_RIGHT;
+}
+
+// Move a stack of N disks (N = `num`)
+void TowersOfHanoi::_move(EPeg from, EPeg to, size_t num) {
+  //cout << "_move(" << from << ", " << to << ", " << num << ")\n";
+  if(num == 1) {
+    _move(from, to);
+  }
+  else {
+    const EPeg other = _other_peg(from, to);
+    _move(from, other, num - 1);
+    _move(from, to);
+    _move(other, to, num - 1);
+  }
+}
+
+// Move a single disk
+void TowersOfHanoi::_move(EPeg from, EPeg to) {
+  //cout << "_move(" << from << ", " << to << ")\n";
+  if(from == to) return;
+
+  int value = 0;
+  stack<int>* src = NULL;
+  stack<int>* dst = NULL;
+
+  // Get pointers to the source and destination pegs (stacks)
+  switch(from) {
+    case PEG_LEFT:  src = &m_left;  break;
+    case PEG_MID:   src = &m_mid;   break;
+    case PEG_RIGHT: src = &m_right; break;
+  }
+
+  switch(to) {
+    case PEG_LEFT:  dst = &m_left;  break;
+    case PEG_MID:   dst = &m_mid;   break;
+    case PEG_RIGHT: dst = &m_right; break;
+  }
+
+  // Check for errors
+  if(src->empty()) {
+    throw logic_error("attempting to move from an empty peg");
+  }
+  if(!dst->empty() && src->top() > dst->top()) {
+    ostringstream ss;
+    ss << "moving disk " << src->top() << " onto disk " << dst->top();
+    throw logic_error(ss.str());
+  }
+
+  //cout << "Moving " << src->top() << " from " << from << " to " << to << endl;
+
+  // Move the topmost value ('disk') from the source to dest
+  dst->push(src->top());
+  src->pop();
+}
+
+// Helper function for printing
+void _print_helper(stack<int>& from, stack<int>& to, size_t size) {
+  if(from.size() == size) {
+    printf("%3d", from.top());
+    to.push(from.top());
+    from.pop();
+  }
+  else {
+    cout << "   ";
+  }
+}
+
+void TowersOfHanoi::print(ostream& out) const {
+  stack<int> temp_left, temp_mid, temp_right;
+  const size_t max_size = max(max(m_left.size(), m_mid.size()), m_right.size());
+
+  // Print each disk. This will pop values off the stacks and place them on
+  // the temp stacks.
+  for(size_t s = max_size; s > 0; --s) {
+    _print_helper(m_left, temp_left, s);
+    cout << "     ";
+    _print_helper(m_mid, temp_mid, s);
+    cout << "     ";
+    _print_helper(m_right, temp_right, s);
+    cout << endl;
+  }
+  cout << "left      mid     right";
+
+  // Move the values back from the temp stacks to the original stacks
+  while(!temp_left.empty()) {
+    m_left.push(temp_left.top());
+    temp_left.pop();
+  }
+  while(!temp_mid.empty()) {
+    m_mid.push(temp_mid.top());
+    temp_mid.pop();
+  }
+  while(!temp_right.empty()) {
+    m_right.push(temp_right.top());
+    temp_right.pop();
+  }
+}
+
+// Print a representation of the current state of the TowersOfHanoi object
+ostream& operator<<(ostream& out, const TowersOfHanoi& obj) {
+  obj.print(out);
+  return out;
+}
+
+void test_chapter_03_question_04() {
+  TowersOfHanoi towers(5);
+  cout << "\nStart state:" << endl;
+  cout << towers << endl;
+
+  towers.solve();
+  cout << "\nSolved state:" << endl;
+  cout << towers << endl;
+}
 
 //------------------------------------------------------------------------------
 
 const string CHAPTER_03_QUESTION_05 =
 "Implement a MyQueue class which implements a queue using two stacks.";
 
-void test_chapter_03_question_05() { }
+template <typename T>
+class MyQueue {
+public:
+  // Push a value to the back of the queue
+  void push(const T& value);
+
+  // Remove the value from the front of the queue
+  void pop();
+
+  // Access the front value
+  T&       front();
+  const T& front() const;
+
+  // Access the front value
+  T&       back();
+  const T& back() const;
+
+private:
+  // Utility functions to move all values between the push and pop stacks
+  void _move_all_to_pop_stack();
+  void _move_all_to_push_stack();
+
+  // Data members
+  stack<T> m_push_stack;
+  stack<T> m_pop_stack;
+};
+
+// TODO: write those member functions!
+
+void test_chapter_03_question_05() {
+  //TODO
+}
 
 //------------------------------------------------------------------------------
 
