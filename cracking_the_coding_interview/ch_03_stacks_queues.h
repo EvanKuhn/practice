@@ -307,6 +307,9 @@ const string CHAPTER_03_QUESTION_05 =
 template <typename T>
 class MyQueue {
 public:
+  // Get the queue size
+  size_t size() const;
+
   // Push a value to the back of the queue
   void push(const T& value);
 
@@ -323,18 +326,87 @@ public:
 
 private:
   // Utility functions to move all values between the push and pop stacks
-  void _move_all_to_pop_stack();
   void _move_all_to_push_stack();
+  void _move_all_to_pop_stack();
 
   // Data members
-  stack<T> m_push_stack;
-  stack<T> m_pop_stack;
+  mutable stack<T> m_push_stack;
+  mutable stack<T> m_pop_stack;
 };
 
-// TODO: write those member functions!
+template <typename T>
+size_t MyQueue<T>::size() const {
+  return m_push_stack.size() + m_pop_stack.size();
+}
+
+template <typename T>
+void MyQueue<T>::push(const T& value) {
+  _move_all_to_push_stack();
+  m_push_stack.push(value);
+}
+
+template <typename T>
+void MyQueue<T>::pop() {
+  _move_all_to_pop_stack();
+  m_pop_stack.pop();
+}
+
+template <typename T>
+T& MyQueue<T>::front() {
+  _move_all_to_pop_stack();
+  return m_pop_stack.top();
+}
+
+template <typename T>
+const T& MyQueue<T>::front() const {
+  _move_all_to_pop_stack();
+  return m_pop_stack.top();
+}
+
+template <typename T>
+T& MyQueue<T>::back() {
+  _move_all_to_push_stack();
+  return m_push_stack.top();
+}
+
+template <typename T>
+const T& MyQueue<T>::back() const {
+  _move_all_to_push_stack();
+  return m_push_stack.top();
+}
+
+template <typename T>
+void MyQueue<T>::_move_all_to_push_stack() {
+  while(!m_pop_stack.empty()) {
+    m_push_stack.push(m_pop_stack.top());
+    m_pop_stack.pop();
+  }
+}
+
+template <typename T>
+void MyQueue<T>::_move_all_to_pop_stack() {
+  while(!m_push_stack.empty()) {
+    m_pop_stack.push(m_push_stack.top());
+    m_push_stack.pop();
+  }
+}
 
 void test_chapter_03_question_05() {
-  //TODO
+  MyQueue<int> q;
+  cout << "Adding 10 values to queue" << endl;
+  for(int i = 1; i <= 10; ++i) {
+    q.push(i);
+  }
+  cout << "q.size() = " << q.size() << endl;
+  cout << "q.front() = " << q.front() << endl;
+  cout << "q.back() = " << q.back() << endl;
+  cout << "values: ";
+  while(q.size() > 0) {
+    cout << q.front() << ' ';
+    q.pop();
+  }
+  cout << endl;
+  cout << "q.size() = " << q.size() << endl;
 }
 
 //------------------------------------------------------------------------------
@@ -344,7 +416,83 @@ const string CHAPTER_03_QUESTION_06 =
 "assumptions about how the stack is implemented. The following are the only\n"
 "functions that should be used to write this program: push | pop | peek | isEmpty.";
 
-void test_chapter_03_question_06() { }
+// TODO: I assume they want use to ONLY USE STACKS to solve this. In that case,
+// create a second stack. Call the stacks A and B. Pop values from A onto B as
+// long as they are decreasing.  If they are increasing, move the values back
+// from B to A, then place the current value back on A.  Then continue moving
+// from A to B.  Do this until you can move all values to B.  Then move all
+// values back to A, so they'll be in ascending order.
+
+void sort_stack_with_stacks(stack<int>& a) {
+  stack<int> b;
+
+  while(!a.empty()) {
+    // Get the next value
+    int val = a.top();
+    a.pop();
+
+    // Place the value on stack B if B is empty or if the value is smaller
+    if(b.empty() || val <= b.top()) {
+      b.push(val);
+    }
+    // Otherwise, move all values from B to A. Add the value to A at the
+    // proper time to maintain the sort order.
+    else {
+      bool pushed = false;
+      while(!b.empty()) {
+        a.push(b.top());
+        b.pop();
+
+        if(!pushed) {
+          if(val >= a.top() && (b.empty() || val <= b.top())) {
+            a.push(val);
+            pushed = true;
+          }
+        }
+      }
+    }
+  }
+
+  // Move all values back from B to A
+  while(!b.empty()) {
+    a.push(b.top());
+    b.pop();
+  }
+}
+
+ostream& operator<<(ostream& out, const stack<int>& s) {
+  stack<int> temp = s;
+  while(!temp.empty()) {
+    out << temp.top();
+    temp.pop();
+    if(!temp.empty()) out << ' ';
+  }
+  return out;
+}
+
+void test_chapter_03_question_06() {
+  // Try a stack with duplicates (probably)
+  stack<int> a;
+  for(int i = 0; i < 10; ++i) {
+    a.push(rand() % 10);
+  }
+
+  // Print the stack before and after sorting
+  cout << "\nBefore: " << a << endl;
+  sort_stack_with_stacks(a);
+  cout << "After:  " << a << endl;
+
+  // Try a stack with no duplicates (probably)
+  stack<int> b;
+  for(int i = 0; i < 10; ++i) {
+    b.push(rand() % 100);
+  }
+
+  // Print the stack before and after sorting
+  cout << "\nBefore: " << b << endl;
+  sort_stack_with_stacks(b);
+  cout << "After:  " << b << endl;
+}
 
 //==============================================================================
 // Chapter class for printing questions and solutions
