@@ -2,6 +2,7 @@
 #include "ch_01_arrays_strings.h"
 #include "ch_02_linked_lists.h"
 #include "ch_03_stacks_queues.h"
+#include "ch_04_trees_graphs.h"
 
 //==============================================================================
 // Chapters
@@ -11,6 +12,7 @@ Chapter CHAPTERS[] = {
   g_chapter_01,
   g_chapter_02,
   g_chapter_03,
+  g_chapter_04,
 };
 
 const size_t NUM_CHAPTERS = array_length(CHAPTERS);

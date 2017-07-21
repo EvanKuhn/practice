@@ -1,8 +1,9 @@
 #pragma once
 
 #include <exception>
-#include <list>
 #include <iostream>
+#include <list>
+#include <queue>
 #include <stack>
 #include <stdexcept>
 #include <string>
@@ -70,7 +71,7 @@ ostream& operator<<(ostream& out, const Exercise& x) {
   out << bold_on << "QUESTION " << x.chapter << '.' << x.number << endl;
   out << "------------" << bold_off << endl;
   out << x.question << endl;
-  out << "\nANSWER:" << endl;
+  out << bold_on << "\nANSWER:" << bold_off << endl;
   x.answer();
   return out;
 }
