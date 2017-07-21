@@ -158,6 +158,9 @@ public:
     resize(num_nodes);
   }
 
+  // Clear the graph
+  void clear() { m_edges.clear(); }
+
   // Resize the graph to contain N nodes
   void resize(size_t num_nodes) {
     m_edges.clear();
@@ -170,6 +173,9 @@ public:
   // Get the number of nodes in the graph
   size_t size() const { return m_edges.size(); }
 
+  // Get adjacent nodes by number
+  void get_adjacent(int n, vector<int>& adj) const;
+
   // Add, delete, or check existence of edge A -> B.
   // Edges are numbered from 0 to size-1.
   void add_edge(size_t a, size_t b)       { m_edges[a][b] = true; }
@@ -177,19 +183,69 @@ public:
   bool has_edge(size_t a, size_t b) const { return m_edges[a][b]; }
 
   // Check if a route exists between two nodes A and B
-  bool has_route(size_t a, size_t b) const;
+  bool has_route(size_t src, size_t dst) const;
 
 private:
   // Adjacency matrix. m_edges[i][j] == true indicates edge I -> J exists.
   vector<vector<bool> > m_edges;
 };
 
-bool DirectedGraph::has_route(size_t a, size_t b) const {
-  return false; // TODO
+void DirectedGraph::get_adjacent(int node, vector<int>& adj) const {
+  adj.clear();
+  for(int i = 0; i < size(); ++i) {
+    if(has_edge(node, i)) {
+      adj.push_back(i);
+    }
+  }
+}
+
+bool DirectedGraph::has_route(size_t src, size_t dst) const {
+  queue<int> horizon;
+  horizon.push(src);
+  unordered_set<int> visited;
+
+  while(!horizon.empty()) {
+    // Get next node in horizon
+    int next = horizon.front();
+    horizon.pop();
+
+    // Mark the node as visited
+    visited.insert(next);
+
+    // Get all nodes adjacent to the node
+    vector<int> adj;
+    get_adjacent(next, adj);
+
+    // Check each adjacent node
+    for(size_t i = 0; i < adj.size(); ++i) {
+      int adj_node = adj[i];
+      // If the adjacent node is the destination, return true!
+      if(adj_node == dst) {
+        return true;
+      }
+      // Else if the adjacent node has not been visited, add it to the horizon
+      if(visited.find(adj_node) == visited.end()) {
+        horizon.push(adj_node);
+      }
+    }
+  }
+  return false;
 }
 
 static void _construct_test_graph(DirectedGraph& g) {
-  // TODO
+  // Graph:
+  //  1 -> 2 -> 3 -> 4 ->5
+  //            ^
+  //            |
+  //  6 -> 7 -- +
+  // So there's a path from 1 -> 5, and 6 -> 5, but not 1 -> 6.
+  g.resize(8);
+  g.add_edge(1, 2);
+  g.add_edge(2, 3);
+  g.add_edge(3, 4);
+  g.add_edge(4, 5);
+  g.add_edge(6, 7);
+  g.add_edge(7, 3);
 }
 
 static void _check_route_exists(const DirectedGraph& graph, size_t a, size_t b,
@@ -207,9 +263,18 @@ void test_chapter_04_question_02() {
   _construct_test_graph(graph);
 
   // Check that routes exist
-  // _check_route_exists(graph, 1, 2, true);
-  // _check_route_exists(graph, 1, 3, false);
-  // ...
+  _check_route_exists(graph, 1, 2, true);
+  _check_route_exists(graph, 1, 3, true);
+  _check_route_exists(graph, 1, 4, true);
+  _check_route_exists(graph, 1, 5, true);
+
+  _check_route_exists(graph, 6, 7, true);
+  _check_route_exists(graph, 6, 3, true);
+  _check_route_exists(graph, 6, 4, true);
+  _check_route_exists(graph, 6, 5, true);
+
+  _check_route_exists(graph, 6, 1, false);
+  _check_route_exists(graph, 6, 2, false);
 }
 
 //------------------------------------------------------------------------------
