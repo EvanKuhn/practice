@@ -140,6 +140,8 @@ void test_chapter_04_question_01() {
   else {
     cout << "Success, tree_is_balanced_r() detected an unbalanced tree" << endl;
   }
+
+  delete tree;
 }
 
 //------------------------------------------------------------------------------
@@ -148,7 +150,67 @@ const string CHAPTER_04_QUESTION_02 =
 "Given a directed graph, design an algorithm to find out whether there is a\n"
 "route between two nodes.";
 
-void test_chapter_04_question_02() { }
+// Simple directed graph class implemented using an adjacency matrix
+class DirectedGraph {
+public:
+  // Construct the DirectedGraph given the number of nodes in the graph
+  explicit DirectedGraph(size_t num_nodes = 0) {
+    resize(num_nodes);
+  }
+
+  // Resize the graph to contain N nodes
+  void resize(size_t num_nodes) {
+    m_edges.clear();
+    m_edges.resize(num_nodes);
+    for(size_t i = 0; i < num_nodes; ++i) {
+      m_edges[i].resize(num_nodes);
+    }
+  }
+
+  // Get the number of nodes in the graph
+  size_t size() const { return m_edges.size(); }
+
+  // Add, delete, or check existence of edge A -> B.
+  // Edges are numbered from 0 to size-1.
+  void add_edge(size_t a, size_t b)       { m_edges[a][b] = true; }
+  void del_edge(size_t a, size_t b)       { m_edges[a][b] = false; }
+  bool has_edge(size_t a, size_t b) const { return m_edges[a][b]; }
+
+  // Check if a route exists between two nodes A and B
+  bool has_route(size_t a, size_t b) const;
+
+private:
+  // Adjacency matrix. m_edges[i][j] == true indicates edge I -> J exists.
+  vector<vector<bool> > m_edges;
+};
+
+bool DirectedGraph::has_route(size_t a, size_t b) const {
+  return false; // TODO
+}
+
+static void _construct_test_graph(DirectedGraph& g) {
+  // TODO
+}
+
+static void _check_route_exists(const DirectedGraph& graph, size_t a, size_t b,
+  bool expected)
+{
+  const bool has_route = graph.has_route(a, b);
+  const char* answer = (has_route ? "true" : "false");
+  const char* status = (has_route == expected ? "OK" : "FAIL");
+  printf("graph.has_route(%lu,%lu) returned %s (%s)\n", a, b, answer, status);
+}
+
+void test_chapter_04_question_02() {
+  // Construct test graph
+  DirectedGraph graph;
+  _construct_test_graph(graph);
+
+  // Check that routes exist
+  // _check_route_exists(graph, 1, 2, true);
+  // _check_route_exists(graph, 1, 3, false);
+  // ...
+}
 
 //------------------------------------------------------------------------------
 
