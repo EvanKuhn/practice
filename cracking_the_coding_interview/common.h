@@ -4,6 +4,8 @@
 #include <iostream>
 #include <list>
 #include <queue>
+#include <map>
+#include <set>
 #include <stack>
 #include <stdexcept>
 #include <string>
@@ -13,6 +15,10 @@
 #include <vector>
 
 using namespace std;
+
+//==============================================================================
+// Misc crap
+//==============================================================================
 
 const char* SEP =
   "================================================================================";
@@ -37,6 +43,18 @@ void seed_rand() {
 
 // Compute a C array length
 #define array_length(array) (sizeof(array) / sizeof(array[0]))
+
+//==============================================================================
+// Printing utilities
+//==============================================================================
+
+ostream& operator<<(ostream& out, const vector<int>& v) {
+  for(size_t i = 0; i < v.size(); ++i) {
+    out << v[i];
+    if(i < v.size() - 1) out << ", ";
+  }
+  return out;
+}
 
 //==============================================================================
 // Exercise struct to hold an exercise's number, question text, and answer

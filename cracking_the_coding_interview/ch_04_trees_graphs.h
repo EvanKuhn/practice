@@ -1,4 +1,5 @@
 #include "common.h"
+#include <math.h>
 
 //==============================================================================
 // Problems and solutions
@@ -283,7 +284,118 @@ const string CHAPTER_04_QUESTION_03 =
 "Given a sorted (increasing order) array, write an algorithm to create a binary\n"
 "tree with minimal height.";
 
-void test_chapter_04_question_03() { }
+// Generate a sorted array of size `size` containing random values from 0-99.
+// Let's ensure that this function does not return duplicates.
+static void _generate_random_sorted_array(vector<int>& array, size_t size) {
+  set<int> vals;
+  const int maxval = pow(10, floor(log10(size)) + 1);
+
+  // Build set of values
+  while(vals.size() < size) {
+    vals.insert(rand() % maxval);
+  }
+
+  // Copy values to array
+  set<int>::const_iterator iter;
+  for(iter = vals.begin(); iter != vals.end(); ++iter) {
+    array.push_back(*iter);
+  }
+}
+
+// Recursive helper function to build a minimal-height tree by processing
+// left and right sub-arrays.
+void _build_tree_process_subarray(TreeNode* parent, const vector<int>& values,
+  size_t i_begin, size_t i_end)
+{
+  // Do nothing if the subarray length is < 1
+  if(i_begin >= i_end) return;
+
+  // Get the middle value
+  size_t i_mid = i_begin + ((i_end - i_begin) / 2);
+  printf("_build_tree_process_subarray range[%lu,%lu), mid v[%lu] = %d\n",
+    i_begin, i_end, i_mid, values[i_mid]);
+
+  // Figure out which child (left or right) should take the value
+  TreeNode*& pchild = (values[i_mid] < parent->value ? parent->left : parent->right);
+
+  // Add the new child and recursively process the new subarrays
+  pchild = new TreeNode(values[i_mid]);
+  _build_tree_process_subarray(pchild, values, i_begin, i_mid);
+  _build_tree_process_subarray(pchild, values, i_mid + 1, i_end);
+}
+
+// Given a sorted array of random values
+TreeNode* build_minimal_height_tree(const vector<int>& values) {
+  // Create the root node
+  size_t mid = (values.size() + 1) / 2;
+  TreeNode* root = new TreeNode(values[mid]);
+  cout << "mid: i = " << mid << " value = " << values[mid] << endl;
+
+  // Process left and right sub-arrays
+  _build_tree_process_subarray(root, values, 0, mid);
+  _build_tree_process_subarray(root, values, mid + 1, values.size());
+
+  // Return the tree
+  return root;
+}
+
+void _count_tree_nodes_and_height(const TreeNode* node, int& nodes,
+  int& curheight, int& maxheight)
+{
+  ++nodes;
+  ++curheight;
+  if(curheight > maxheight) maxheight = curheight;
+
+  if(node->left) {
+    _count_tree_nodes_and_height(node->left, nodes, curheight, maxheight);
+  }
+  if(node->right) {
+    _count_tree_nodes_and_height(node->left, nodes, curheight, maxheight);
+  }
+
+  --curheight;
+}
+
+bool _tree_is_minimal_height(const TreeNode* root, int& num_nodes,
+  int& max_height)
+{
+  // Get the number of nodes, and max height
+  num_nodes = 0;
+  max_height = 0;
+  int cur_height = 0;
+  _count_tree_nodes_and_height(root, num_nodes, cur_height, max_height);
+
+  // Calculate the minimum height, and check to see if the tree has that height
+  const int min_height = static_cast<int>(ceil(log2(num_nodes + 1)));
+  return max_height == min_height;
+}
+
+// General approach is recursive divide-and-conquer:
+// - Pick the value in the middle of the array and add it to the tree.
+// - For the left sub-array, pick its middle value and add it as the left child.
+// - Same for the right-subarray: pick its middle value, add it as the right child.
+// - Recusively add subarray middle values as children of the current node.
+void test_chapter_04_question_03() {
+  // Generate an array of test values
+  vector<int> values;
+  _generate_random_sorted_array(values, 15);
+  cout << "array: " << values << endl;
+
+  // Build the tree
+  const TreeNode* tree = build_minimal_height_tree(values);
+  cout << "Tree built" << endl;
+
+  // Check the tree
+  int num_nodes, max_height;
+  if(_tree_is_minimal_height(tree, num_nodes, max_height)) {
+    printf("Success, tree is minimal height! (nodes = %d, height = %d)\n",
+      num_nodes, max_height);
+  }
+  else {
+    printf("Failure, tree height is NOT minimal! (nodes = %d, height = %d)\n",
+      num_nodes, max_height);
+  }
+}
 
 //------------------------------------------------------------------------------
 
@@ -292,7 +404,58 @@ const string CHAPTER_04_QUESTION_04 =
 "all the nodes at each depth (i.e., if you have a tree with depth D, you’ll have\n"
 "D linked lists).";
 
-void test_chapter_04_question_04() { }
+
+TreeNode* _build_test_tree() {
+  //TODO
+  return new TreeNode(10,
+    new TreeNode(5,
+      new TreeNode(3),
+      new TreeNode(7)
+    ),
+    new TreeNode(15,
+      new TreeNode(12),
+      new TreeNode(17)
+    )
+  );
+}
+
+// Typedefs:
+// - A list of tree nodes.
+// - A map from depth to list of tree nodes.
+typedef list<const TreeNode*> node_list_t;
+typedef map<int, node_list_t> depth_map_t;
+
+// Helper function for list_nodes_by_depth()
+void _list_nodes_by_depth(const TreeNode* node, depth_map_t& depth_map, int depth) {
+  depth_map[depth].push_back(node);
+  if(node->left)  _list_nodes_by_depth(node->left,  depth_map, depth + 1);
+  if(node->right) _list_nodes_by_depth(node->right, depth_map, depth + 1);
+}
+
+// Given a tree, return a depth_map_t map that lists each node at each depth
+void list_nodes_by_depth(const TreeNode* root, depth_map_t& depth_map) {
+  _list_nodes_by_depth(root, depth_map, 1);
+}
+
+void test_chapter_04_question_04() {
+  depth_map_t depth_map;
+  const TreeNode* tree = _build_test_tree();
+  list_nodes_by_depth(tree, depth_map);
+
+  depth_map_t::const_iterator depth_iter;
+  node_list_t::const_iterator nodes_iter;
+
+  for(depth_iter = depth_map.begin(); depth_iter != depth_map.end(); ++depth_iter) {
+    const int& depth = depth_iter->first;
+    const node_list_t& nodes = depth_iter->second;
+
+    cout << depth << ": ";
+    for(nodes_iter = nodes.begin(); nodes_iter != nodes.end(); ++nodes_iter) {
+      cout << (*nodes_iter)->value << ' ';
+    }
+    cout << endl;
+  }
+}
 
 //------------------------------------------------------------------------------
 
@@ -300,7 +463,19 @@ const string CHAPTER_04_QUESTION_05 =
 "Write an algorithm to find the ‘next’ node (i.e., in-order successor) of a\n"
 "given node in a binary search tree where each node has a link to its parent.";
 
-void test_chapter_04_question_05() { }
+void test_chapter_04_question_05() {
+  /*
+  Basic idea:
+  - If the node has a right child, go to the right child and find its left-most
+    ancestor; that is the successor.
+  - Otherwise, go up to the parent.
+    - If the parent has a right child, go to the right child and find its
+      left-most ancester.
+    - Else return the parent.
+  - If the
+
+  */
+}
 
 //------------------------------------------------------------------------------
 
